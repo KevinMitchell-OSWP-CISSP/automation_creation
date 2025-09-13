@@ -1,0 +1,534 @@
+{
+  "name": "Autonomous Employee — Router/Approval/Standup (Portable v2)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "autonomous-employee",
+        "responseMode": "lastNode"
+      },
+      "id": "555fd88c-3856-4790-8059-cfca13547451",
+      "name": "Webhook (Command In)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1080,
+        -220
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "a8fcccb2-0368-4b20-be4b-037d34f4b09d",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1080,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "\n// Classify to a lane and flag risky actions.\nconst text = ($json.text || '').toString();\nconst lower = text.toLowerCase();\nlet lane = 'Docs';\nif (/(schedule|meeting|calendar|availability|book)/.test(lower)) lane = 'Scheduling';\nelse if (/(email|reply|respond|compose|inbox)/.test(lower)) lane = 'Comms';\nelse if (/(proposal|sow|doc|report|slide|deck)/.test(lower)) lane = 'Docs';\nelse if (/(watchlist|rfp|monitor|news|research)/.test(lower)) lane = 'Research';\nelse if (/(security|pentest|seed|key|vuln|scan)/.test(lower)) lane = 'Security';\nelse if (/(crm|lead|pipeline|gohighlevel|contact)/.test(lower)) lane = 'CRM';\nconst risky_action = /(send|delete|invoice|charge|share|invite)/.test(lower);\nreturn [{ lane, text, risky_action, ok_to_act: $json.ok_to_act ?? false }];\n"
+      },
+      "id": "886fba59-6648-45eb-94d2-ceb0011e8a28",
+      "name": "Router (Function)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "value1": "={{$json.lane}}",
+        "rules": [
+          {
+            "operation": "equal",
+            "value2": "Comms"
+          },
+          {
+            "operation": "equal",
+            "value2": "Scheduling"
+          },
+          {
+            "operation": "equal",
+            "value2": "Docs"
+          },
+          {
+            "operation": "equal",
+            "value2": "Research"
+          },
+          {
+            "operation": "equal",
+            "value2": "Security"
+          },
+          {
+            "operation": "equal",
+            "value2": "CRM"
+          }
+        ]
+      },
+      "id": "0c2b5444-3b12-439b-b346-0f9f356f8d44",
+      "name": "Switch Lane",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "to",
+              "value": "someone@example.com"
+            },
+            {
+              "name": "subject",
+              "value": "Re: {{ summary }}"
+            },
+            {
+              "name": "message",
+              "value": "Hi,\\n\\nHere is the response.\\n\\n— Autonomous Employee\\n"
+            }
+          ]
+        }
+      },
+      "id": "5b160895-ca0d-46c4-b6a7-d74ab9bc710f",
+      "name": "Draft Email (Set)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -300
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "boolean": [
+            {
+              "name": "approval_ok",
+              "value": "={{$json.ok_to_act || !$json.risky_action}}"
+            }
+          ]
+        }
+      },
+      "id": "bc395230-b4f6-4b16-8c19-a075a128277a",
+      "name": "Compute Approval OK",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        -300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.approval_ok}}",
+              "operation": "isTrue"
+            }
+          ]
+        }
+      },
+      "id": "1b669367-8b11-4ce9-9ecc-b0534741481c",
+      "name": "Approval Gate (IF)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        100,
+        -300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "to": "={{$json.to}}",
+        "subject": "={{$json.subject}}",
+        "message": "={{$json.message}}"
+      },
+      "id": "aa0df355-08fd-40c4-b8bb-bdf1a2daa5b5",
+      "name": "Gmail Send",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        320,
+        -380
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "held_for_approval"
+            },
+            {
+              "name": "note",
+              "value": "Set ok_to_act=true to allow send."
+            }
+          ]
+        }
+      },
+      "id": "98cdd37a-d295-4f4f-9e33-39cfea4d8a76",
+      "name": "Draft Held (Set)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -230
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "title",
+              "value": "Focus Block — {{topic}}"
+            },
+            {
+              "name": "start",
+              "value": "={{$now.plus({minutes:15}).toISO()}}"
+            },
+            {
+              "name": "end",
+              "value": "={{$now.plus({minutes:75}).toISO()}}"
+            },
+            {
+              "name": "description",
+              "value": "Auto time-block from instruction."
+            }
+          ]
+        }
+      },
+      "id": "645366eb-4763-4ade-9348-6c119defad26",
+      "name": "Build Calendar Event (Set)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "calendarId": "primary",
+        "start": "={{$json.start}}",
+        "end": "={{$json.end}}",
+        "title": "={{$json.title}}",
+        "additionalFields": {
+          "description": "={{$json.description}}"
+        }
+      },
+      "id": "c84b59da-cf9a-4db9-a7c0-0a0f4c9323e1",
+      "name": "Calendar Create",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 2,
+      "position": [
+        120,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "",
+        "range": "Sheet1!A:C",
+        "value": {
+          "values": [
+            [
+              "={{$now.toISODate()}}",
+              "={{$json.text}}",
+              "INBOX-CAPTURE"
+            ]
+          ]
+        }
+      },
+      "id": "c1e08544-2d0c-4511-90a2-e6812b088b33",
+      "name": "Append Task Row (Sheets)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -300,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://example.com/feed"
+      },
+      "id": "6b950c20-1f23-468c-ac29-7828abe9f9fe",
+      "name": "Research (HTTP Request)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "todo",
+              "value": "Route to Security pipeline (wire later)."
+            }
+          ]
+        }
+      },
+      "id": "27699331-5ca0-4a1f-8ae9-01152e099aa4",
+      "name": "Security TODO (Set)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "todo",
+              "value": "Create/Update contact in GoHighLevel (wire later)."
+            }
+          ]
+        }
+      },
+      "id": "6f33eef1-22c6-46cb-91b2-6c1aa2115242",
+      "name": "CRM TODO (Set)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1
+            }
+          ],
+          "time": "08:45"
+        }
+      },
+      "id": "b9cdfb04-657b-4518-b37f-844a2621c96c",
+      "name": "Daily Standup (Schedule)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1080,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "\nconst today = $now.toISODate();\nconst body = [\n  `Good morning — ${today}`,\n  ``,\n  `Yesterday:`,\n  `• Completed: (fill from Sheets/Calendar)`,\n  ``,\n  `Today (Top 3):`,\n  `1)`,\n  `2)`,\n  `3)`,\n  ``,\n  `Blockers:`,\n  `• None noted`,\n  ``,\n  `— Autonomous Employee`\n].join('\\n');\nreturn [{ to: 'you@example.com', subject: `Daily Stand-up — ${today}`, message: body }];\n"
+      },
+      "id": "e18f67f4-f6f7-4956-802a-c9b00f5603e1",
+      "name": "Build Standup (Function)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "to": "={{$json.to}}",
+        "subject": "={{$json.subject}}",
+        "message": "={{$json.message}}"
+      },
+      "id": "26af8d56-31f7-4ad9-b3ce-f7cd50cb31fb",
+      "name": "Send Standup (Gmail)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        -540,
+        420
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook (Command In)": {
+      "main": [
+        [
+          {
+            "node": "Router (Function)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Router (Function)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router (Function)": {
+      "main": [
+        [
+          {
+            "node": "Switch Lane",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Lane": {
+      "main": [
+        [
+          {
+            "node": "Draft Email (Set)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Calendar Event (Set)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append Task Row (Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Research (HTTP Request)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Security TODO (Set)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CRM TODO (Set)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Draft Email (Set)": {
+      "main": [
+        [
+          {
+            "node": "Compute Approval OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Approval OK": {
+      "main": [
+        [
+          {
+            "node": "Approval Gate (IF)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approval Gate (IF)": {
+      "main": [
+        [
+          {
+            "node": "Gmail Send",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Draft Held (Set)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Calendar Event (Set)": {
+      "main": [
+        [
+          {
+            "node": "Calendar Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Standup (Schedule)": {
+      "main": [
+        [
+          {
+            "node": "Build Standup (Function)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Standup (Function)": {
+      "main": [
+        [
+          {
+            "node": "Send Standup (Gmail)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "3ba431f0-819f-4e58-b9ed-82a1506f4417",
+  "id": "a2386605-0664-44be-9cb3-c600dc00254b"
+}
