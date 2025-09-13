@@ -1,0 +1,72 @@
+{
+  "createdAt": "2024-02-23T16:58:31.616Z",
+  "updatedAt": "2024-02-23T16:58:31.616Z",
+  "id": "dd4ae436-0dcb-4a",
+  "name": "BLANK — Minimal-required subset",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "diag-webhook",
+        "responseMode": "lastNode"
+      },
+      "id": "10d2cee5-51b7-4112-b316-03f250189341",
+      "name": "Webhook (min)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        520,
+        260
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "1bb9991b-2443-4984-b888-091b3acd2712",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        520,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [$json];"
+      },
+      "id": "59e852c6-a823-4492-a07d-f0995866bbf4",
+      "name": "Function",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        520,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook (min)": {
+      "main": [
+        [
+          {
+            "node": "Function",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "d5d9d8bc-3a6a-4f0e-bd86-01aa833cebf7",
+  "triggerCount": 0,
+  "tags": []
+}

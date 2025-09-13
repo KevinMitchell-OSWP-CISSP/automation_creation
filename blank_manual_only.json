@@ -1,0 +1,32 @@
+{
+  "createdAt": "2024-02-23T16:58:31.616Z",
+  "updatedAt": "2024-02-23T16:58:31.616Z",
+  "id": "7536ce9f-20fe-44",
+  "name": "BLANK — Manual Trigger only",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "d34eab0a-b5f4-459b-9c42-687dc7635a39",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        660,
+        340
+      ]
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "143bdd34-c398-46f9-a1eb-5fc652d55420",
+  "triggerCount": 0,
+  "tags": []
+}

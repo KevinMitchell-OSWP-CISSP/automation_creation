@@ -1,0 +1,142 @@
+{
+  "createdAt": "2024-02-23T16:58:31.616Z",
+  "updatedAt": "2024-02-23T16:58:31.616Z",
+  "id": "0a5faf44-1d68-48",
+  "name": "BLANK — Base suite (no connections)",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "54afed6b-5493-49e3-b35c-7dfb4bfc77a5",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        520,
+        120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "e05d0807-0a43-44f4-b17b-26e4ec5ee887",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        520,
+        260
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "e9600672-9afc-4cf9-80c7-04aaa4e42108",
+      "name": "Function",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        520,
+        400
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "c082df0e-3d76-40b0-9965-b9217016d381",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        520,
+        540
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "c92d1bf3-d700-4047-a047-744da62a1eac",
+      "name": "Set",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        520,
+        680
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "1d124965-dddd-4108-b0ab-2d29755f4a96",
+      "name": "IF",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        520,
+        820
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "3a82ed96-3108-4d55-9805-e54fad8c9d6f",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        840,
+        120
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "487f4c50-61ef-4b04-a357-e93e4041e05b",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        840,
+        260
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "af76284d-8467-40d2-9582-998813e225cd",
+      "name": "Google Calendar",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 2,
+      "position": [
+        840,
+        400
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "8fc8195a-ba5c-49c5-81d2-529aa617f95b",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        840,
+        540
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "631ed6bf-cea9-4821-b9c6-db9217c3389a",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        840,
+        680
+      ]
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "38300445-fa56-47e5-8116-20d90e5ccd25",
+  "triggerCount": 0,
+  "tags": []
+}
